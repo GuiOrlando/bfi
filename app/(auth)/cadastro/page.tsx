@@ -1,7 +1,7 @@
-import LoginForm from "@/components/auth/login-form";
 import Link from "next/link";
+import RegisterForm from "@/components/auth/register-form";
 
-export default function LoginPage() {
+export default function RegisterPage() {
     return (
         <main className="min-h-screen bg-[#F4F7FB] px-5 py-8 text-[#102A43] sm:px-8">
             <section className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-5xl overflow-hidden rounded-3xl bg-white shadow-xl shadow-[#102A43]/10">
@@ -12,13 +12,13 @@ export default function LoginPage() {
                         </p>
 
                         <h1 className="mt-6 text-4xl font-bold leading-tight">
-                            Suas finanças,
+                            Comece a organizar
                             <br />
-                            sob controle.
+                            sua vida financeira.
                         </h1>
 
-                        <p className="mt-5 max-w-sm leading-relaxed text-[#d9e2ec]">
-                            Organize contas, acompanhe seus investimentos e tome decisões com mais clareza.
+                        <p className="mt-5 max-w-sm leading-relaxed text-[#D9E2EC]">
+                            Centralize suas contas, investimentos e objetivos em um só lugar.
                         </p>
                     </div>
 
@@ -34,22 +34,22 @@ export default function LoginPage() {
                                 BFI
                             </p>
 
-                            <h2 className="mt-3 text-3xl font-bold">Entrar na sua conta</h2>
+                            <h1 className="mt-3 text-3xl font-bold">Criar sua conta</h1>
 
                             <p className="mt-2 text-sm text-[#627D98]">
-                                Informe seus dados para acessar seu controle financeiro.
-                            </p>                          
+                                Preencha os dados abaixo para começar.
+                            </p>
                         </div>
 
-                        <LoginForm />
+                        <RegisterForm />
 
                         <p className="mt-8 text-center text-sm text-[#627D98]">
-                            Ainda não possui uma conta?{" "}
+                            Já possui uma conta?{" "}
                             <Link
-                                href="/cadastro"
+                                href="/login"
                                 className="font-semibold text-[#246B9F] hover:underline"
                             >
-                                Criar conta
+                                Entrar
                             </Link>
                         </p>
                     </div>

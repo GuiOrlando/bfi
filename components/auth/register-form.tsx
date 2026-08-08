@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, type SubmitEvent } from "react";
 import { apiFetch } from "@/lib/api";
 
-type LoginResponse = {
+type RegisterResponse = {
     message: string;
     user: {
         id: number;
@@ -13,9 +13,10 @@ type LoginResponse = {
     };
 };
 
-export default function LoginForm() {
+export default function RegisterForm() {
     const router = useRouter();
 
+    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -28,21 +29,22 @@ export default function LoginForm() {
         setIsLoading(true);
 
         try {
-            await apiFetch<LoginResponse>("/api/auth/login", {
+            await apiFetch<RegisterResponse>("/api/auth/register", {
                 method: "POST",
                 body: JSON.stringify({
-                email,
-                password,
-            }),
-        });
+                    name,
+                    email,
+                    password,
+                }),
+            });
 
-        router.push("/dashboard");
-        router.refresh();
+            router.push("/dashboard");
+            router.refresh();
         } catch (error) {
             setErrorMessage(
                 error instanceof Error
-                ? error.message
-                : "Não foi possível realizar o login.",
+                    ? error.message
+                    : "Não foi possível criar sua conta.",
             );
         } finally {
             setIsLoading(false);
@@ -61,16 +63,32 @@ export default function LoginForm() {
             )}
 
             <div>
-                <label
-                    htmlFor="email"
-                    className="mb-2 block text-sm font-semibold text-[#102A43]"
-                >
+                <label htmlFor="name" className="mb-2 block text-sm font-semibold">
+                    Nome completo
+                </label>
+
+                <input
+                    id="name"
+                    type="text"
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                    placeholder="Seu nome"
+                    autoComplete="name"
+                    minLength={3}
+                    maxLength={100}
+                    required
+                    disabled={isLoading}
+                    className="w-full rounded-xl border border-[#D9E2EC] px-4 py-3 text-sm outline-none transition focus:border-[#246B9F] focus:ring-4 focus:ring-[#246B9F]/15 disabled:bg-[#F4F7FB]"
+                />
+            </div>
+
+            <div>
+                <label htmlFor="email" className="mb-2 block text-sm font-semibold">
                     E-mail
                 </label>
 
                 <input
                     id="email"
-                    name="email"
                     type="email"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
@@ -78,38 +96,27 @@ export default function LoginForm() {
                     autoComplete="email"
                     required
                     disabled={isLoading}
-                    className="w-full rounded-xl border border-[#D9E2EC] px-4 py-3 text-sm outline-none transition placeholder:text-[#829AB1] focus:border-[#246B9F] focus:ring-4 focus:ring-[#246B9F]/15 disabled:cursor-not-allowed disabled:bg-[#F4F7FB]"
+                    className="w-full rounded-xl border border-[#D9E2EC] px-4 py-3 text-sm outline-none transition focus:border-[#246B9F] focus:ring-4 focus:ring-[#246B9F]/15 disabled:bg-[#F4F7FB]"
                 />
             </div>
 
             <div>
-                <div className="mb-2 flex items-center justify-between gap-4">
-                    <label
-                        htmlFor="password"
-                        className="text-sm font-semibold text-[#102A43]"
-                    >
-                        Senha
-                    </label>
-
-                    <button
-                        type="button"
-                        className="text-sm font-semibold text-[#246B9F] hover:underline"
-                    >
-                        Esqueci minha senha
-                    </button>
-                </div>
+                <label htmlFor="password" className="mb-2 block text-sm font-semibold">
+                    Senha
+                </label>
 
                 <input
                     id="password"
-                    name="password"
                     type="password"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
-                    placeholder="Digite sua senha"
-                    autoComplete="current-password"
+                    placeholder="Mínimo de 8 caracteres"
+                    autoComplete="new-password"
+                    minLength={8}
+                    maxLength={72}
                     required
                     disabled={isLoading}
-                    className="w-full rounded-xl border border-[#D9E2EC] px-4 py-3 text-sm outline-none transition placeholder:text-[#829AB1] focus:border-[#246B9F] focus:ring-4 focus:ring-[#246B9F]/15 disabled:cursor-not-allowed disabled:bg-[#F4F7FB]"
+                    className="w-full rounded-xl border border-[#D9E2EC] px-4 py-3 text-sm outline-none transition focus:border-[#246B9F] focus:ring-4 focus:ring-[#246B9F]/15 disabled:bg-[#F4F7FB]"
                 />
             </div>
 
@@ -118,7 +125,7 @@ export default function LoginForm() {
                 disabled={isLoading}
                 className="w-full rounded-xl bg-[#246B9F] px-4 py-3 font-semibold text-white transition hover:bg-[#1D5A88] disabled:cursor-not-allowed disabled:opacity-70"
             >
-                {isLoading ? "Entrando..." : "Entrar"}
+                {isLoading ? "Criando conta..." : "Criar conta"}
             </button>
         </form>
     );
