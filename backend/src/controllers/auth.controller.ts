@@ -1,14 +1,8 @@
 import type { Request, Response } from "express";
 import { z } from "zod";
-import {
-  loginUser,
-  refreshSession,
-  registerUser,
-} from "../services/auth.service.js";
-import {
-  clearAuthCookies,
-  setAuthCookies,
-} from "../utils/auth-cookies.js";
+import { loginUser, refreshSession, registerUser, getUserById } from "../services/auth.service.js";
+import { clearAuthCookies, setAuthCookies } from "../utils/auth-cookies.js";
+import type { AuthenticatedRequest } from "../middlewares/authenticate.js";
 
 const registerSchema = z.object({
   name: z
@@ -125,4 +119,23 @@ export function logout(_request: Request, response: Response) {
   clearAuthCookies(response);
 
   return response.status(204).send();
+}
+
+export async function me(request: Request, response: Response) {
+  try {
+    const userId = (request as AuthenticatedRequest).userId;
+    const user = await getUserById(userId);
+
+    return response.status(200).json({ user });
+  } catch (error) {
+    if (error instanceof Error && error.message === "USER_NOT_FOUND") {
+      clearAuthCookies(response);
+
+      return response.status(401).json({
+        message: "Usuário não encontrado ou desativado.",
+      });
+    }
+
+    throw error;
+  }
 }

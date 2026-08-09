@@ -1,9 +1,10 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getAuthenticatedUser } from "@/lib/auth";
 import {
   ArrowDownRight,
   ArrowUpRight,
   Bell,
-  BriefcaseBusiness,
   Building2,
   ChevronDown,
   CircleDollarSign,
@@ -67,8 +68,18 @@ const transactions = [
 
 const categories = [
   { name: "Moradia", amount: 1250, percentage: 38, color: "bg-[#D65A4A]" },
-  { name: "Alimentação", amount: 680, percentage: 21, color: "bg-[#E0A13B]" },
-  { name: "Transporte", amount: 390, percentage: 12, color: "bg-[#246B9F]" },
+  {
+    name: "Alimentação",
+    amount: 680,
+    percentage: 21,
+    color: "bg-[#E0A13B]",
+  },
+  {
+    name: "Transporte",
+    amount: 390,
+    percentage: 12,
+    color: "bg-[#246B9F]",
+  },
   { name: "Lazer", amount: 265, percentage: 8, color: "bg-[#2F9E71]" },
 ];
 
@@ -107,7 +118,17 @@ function SidebarLink({
   );
 }
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const user = await getAuthenticatedUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const normalizedName = user.name.trim();
+  const firstName = normalizedName.split(/\s+/)[0] || "Usuário";
+  const initial = Array.from(normalizedName)[0]?.toUpperCase() ?? "U";
+
   return (
     <main className="min-h-screen bg-[#F4F7FB] text-[#102A43]">
       <aside className="fixed inset-y-0 left-0 hidden w-72 flex-col bg-[#102A43] px-5 py-7 lg:flex">
@@ -129,33 +150,44 @@ export default function DashboardPage() {
             icon={LayoutDashboard}
             active
           />
+
           <SidebarLink
             href="/movimentacoes"
             label="Movimentações"
             icon={ReceiptText}
           />
-          <SidebarLink href="/contas" label="Minhas contas" icon={WalletCards} />
+
+          <SidebarLink
+            href="/contas"
+            label="Minhas contas"
+            icon={WalletCards}
+          />
+
           <SidebarLink
             href="/investimentos"
             label="Investimentos"
             icon={TrendingUp}
           />
-          <SidebarLink href="/metas" label="Metas financeiras" icon={Target} />
+
+          <SidebarLink
+            href="/metas"
+            label="Metas financeiras"
+            icon={Target}
+          />
         </nav>
 
         <div className="mt-auto rounded-2xl border border-white/10 bg-white/5 p-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#2F9E71] font-bold text-white">
-              G
+              {initial}
             </div>
 
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-white">
-                Guilherme Orlando
+                {user.name}
               </p>
-              <p className="truncate text-xs text-[#A9CFC3]">
-                guilherme160702@gmail.com
-              </p>
+
+              <p className="truncate text-xs text-[#A9CFC3]">{user.email}</p>
             </div>
           </div>
 
@@ -175,11 +207,14 @@ export default function DashboardPage() {
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#102A43] font-bold text-white">
               B
             </div>
+
             <span className="font-bold">BFI</span>
           </Link>
 
           <div className="hidden lg:block">
-            <p className="text-sm text-[#627D98]">Sexta-feira, 8 de agosto</p>
+            <p className="text-sm text-[#627D98]">
+              Sexta-feira, 8 de agosto
+            </p>
           </div>
 
           <div className="ml-auto flex items-center gap-3">
@@ -208,9 +243,11 @@ export default function DashboardPage() {
               <p className="text-sm font-semibold text-[#246B9F]">
                 VISÃO GERAL
               </p>
+
               <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">
-                Olá, Guilherme!
+                Olá, {firstName}!
               </h1>
+
               <p className="mt-2 text-[#627D98]">
                 Acompanhe como estão suas finanças neste mês.
               </p>
@@ -231,14 +268,19 @@ export default function DashboardPage() {
                 <div className="rounded-xl bg-[#246B9F]/10 p-3 text-[#246B9F]">
                   <WalletCards size={21} />
                 </div>
+
                 <span className="rounded-full bg-[#2F9E71]/10 px-2.5 py-1 text-xs font-bold text-[#168254]">
                   +4,8%
                 </span>
               </div>
+
               <p className="mt-5 text-sm font-medium text-[#627D98]">
                 Saldo total
               </p>
-              <p className="mt-1 text-2xl font-bold">{formatCurrency(18750)}</p>
+
+              <p className="mt-1 text-2xl font-bold">
+                {formatCurrency(18750)}
+              </p>
             </article>
 
             <article className="rounded-2xl border border-[#D9E2EC] bg-white p-5 shadow-sm">
@@ -246,11 +288,16 @@ export default function DashboardPage() {
                 <div className="rounded-xl bg-[#2F9E71]/10 p-3 text-[#168254]">
                   <ArrowUpRight size={21} />
                 </div>
+
                 <span className="text-xs font-semibold text-[#627D98]">
                   Este mês
                 </span>
               </div>
-              <p className="mt-5 text-sm font-medium text-[#627D98]">Receitas</p>
+
+              <p className="mt-5 text-sm font-medium text-[#627D98]">
+                Receitas
+              </p>
+
               <p className="mt-1 text-2xl font-bold text-[#168254]">
                 {formatCurrency(4200)}
               </p>
@@ -261,11 +308,16 @@ export default function DashboardPage() {
                 <div className="rounded-xl bg-[#D65A4A]/10 p-3 text-[#C75339]">
                   <ArrowDownRight size={21} />
                 </div>
+
                 <span className="text-xs font-semibold text-[#627D98]">
                   Este mês
                 </span>
               </div>
-              <p className="mt-5 text-sm font-medium text-[#627D98]">Despesas</p>
+
+              <p className="mt-5 text-sm font-medium text-[#627D98]">
+                Despesas
+              </p>
+
               <p className="mt-1 text-2xl font-bold text-[#C75339]">
                 {formatCurrency(2958.8)}
               </p>
@@ -276,14 +328,19 @@ export default function DashboardPage() {
                 <div className="rounded-xl bg-[#E0A13B]/15 p-3 text-[#9F7613]">
                   <TrendingUp size={21} />
                 </div>
+
                 <span className="rounded-full bg-[#2F9E71]/10 px-2.5 py-1 text-xs font-bold text-[#168254]">
                   +{formatCurrency(700)}
                 </span>
               </div>
+
               <p className="mt-5 text-sm font-medium text-[#627D98]">
                 Investimentos
               </p>
-              <p className="mt-1 text-2xl font-bold">{formatCurrency(12500)}</p>
+
+              <p className="mt-1 text-2xl font-bold">
+                {formatCurrency(12500)}
+              </p>
             </article>
           </section>
 
@@ -291,7 +348,10 @@ export default function DashboardPage() {
             <article className="rounded-2xl border border-[#D9E2EC] bg-white p-5 shadow-sm sm:p-6 xl:col-span-2">
               <div className="flex items-start justify-between">
                 <div>
-                  <h2 className="text-lg font-bold">Evolução do patrimônio</h2>
+                  <h2 className="text-lg font-bold">
+                    Evolução do patrimônio
+                  </h2>
+
                   <p className="mt-1 text-sm text-[#627D98]">
                     Crescimento dos últimos seis meses.
                   </p>
@@ -316,11 +376,13 @@ export default function DashboardPage() {
                       <span className="absolute -top-8 hidden rounded-md bg-[#102A43] px-2 py-1 text-xs font-semibold text-white group-hover:block">
                         {formatCurrency(item.value * 250)}
                       </span>
+
                       <div
                         className="w-full max-w-12 rounded-t-xl bg-[#2F9E71] transition group-hover:bg-[#246B9F]"
                         style={{ height: `${item.value}%` }}
                       />
                     </div>
+
                     <p className="mt-3 text-center text-xs font-medium text-[#627D98]">
                       {item.month}
                     </p>
@@ -333,6 +395,7 @@ export default function DashboardPage() {
               <div className="flex items-start justify-between">
                 <div>
                   <h2 className="text-lg font-bold">Meta do mês</h2>
+
                   <p className="mt-1 text-sm text-[#627D98]">
                     Reserva de emergência
                   </p>
@@ -345,7 +408,10 @@ export default function DashboardPage() {
 
               <div className="mt-8">
                 <div className="flex items-end justify-between">
-                  <p className="text-2xl font-bold">{formatCurrency(700)}</p>
+                  <p className="text-2xl font-bold">
+                    {formatCurrency(700)}
+                  </p>
+
                   <p className="text-sm font-semibold text-[#168254]">70%</p>
                 </div>
 
@@ -372,7 +438,10 @@ export default function DashboardPage() {
             <article className="rounded-2xl border border-[#D9E2EC] bg-white p-5 shadow-sm sm:p-6 xl:col-span-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-bold">Movimentações recentes</h2>
+                  <h2 className="text-lg font-bold">
+                    Movimentações recentes
+                  </h2>
+
                   <p className="mt-1 text-sm text-[#627D98]">
                     Últimos lançamentos realizados.
                   </p>
@@ -404,6 +473,7 @@ export default function DashboardPage() {
                         <p className="truncate text-sm font-bold">
                           {transaction.title}
                         </p>
+
                         <p className="mt-0.5 text-xs text-[#627D98]">
                           {transaction.category} · {transaction.date}
                         </p>
@@ -426,13 +496,19 @@ export default function DashboardPage() {
             <article className="rounded-2xl border border-[#D9E2EC] bg-white p-5 shadow-sm sm:p-6 xl:col-span-2">
               <div className="flex items-start justify-between">
                 <div>
-                  <h2 className="text-lg font-bold">Despesas por categoria</h2>
+                  <h2 className="text-lg font-bold">
+                    Despesas por categoria
+                  </h2>
+
                   <p className="mt-1 text-sm text-[#627D98]">
                     Distribuição em agosto.
                   </p>
                 </div>
 
-                <CircleDollarSign size={22} className="text-[#246B9F]" />
+                <CircleDollarSign
+                  size={22}
+                  className="text-[#246B9F]"
+                />
               </div>
 
               <div className="mt-6 space-y-5">
@@ -440,6 +516,7 @@ export default function DashboardPage() {
                   <div key={category.name}>
                     <div className="flex justify-between gap-4 text-sm">
                       <span className="font-semibold">{category.name}</span>
+
                       <span className="text-[#627D98]">
                         {formatCurrency(category.amount)}
                       </span>
@@ -472,6 +549,7 @@ export default function DashboardPage() {
 
               <div className="flex-1">
                 <p className="text-sm font-semibold">Contas e reservas</p>
+
                 <p className="mt-1 text-sm text-[#627D98]">
                   Você possui 3 contas cadastradas.
                 </p>
@@ -491,7 +569,10 @@ export default function DashboardPage() {
               </div>
 
               <div className="flex-1">
-                <p className="text-sm font-semibold">Planejamento financeiro</p>
+                <p className="text-sm font-semibold">
+                  Planejamento financeiro
+                </p>
+
                 <p className="mt-1 text-sm text-[#627D98]">
                   Você já alcançou 70% da sua meta mensal.
                 </p>
