@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getAuthenticatedUser } from "@/lib/auth";
+import LogoutButton from "@/components/auth/logout-button";
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -11,7 +12,6 @@ import {
   CreditCard,
   Landmark,
   LayoutDashboard,
-  LogOut,
   MoreHorizontal,
   PiggyBank,
   Plus,
@@ -191,13 +191,7 @@ export default async function DashboardPage() {
             </div>
           </div>
 
-          <button
-            type="button"
-            className="mt-4 flex items-center gap-2 text-sm text-[#C5DDD5] transition hover:text-white"
-          >
-            <LogOut size={16} />
-            Sair da conta
-          </button>
+          <LogoutButton />
         </div>
       </aside>
 
